@@ -1,0 +1,230 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class Plant {
+  final String name;
+  final String species;
+  final String location;
+  final String careInstructions;
+
+  Plant({
+    required this.name,
+    required this.species,
+    required this.location,
+    required this.careInstructions,
+  });
+}
+
+class PlantCareNotifier extends ChangeNotifier {
+  List<Plant> _plants = [];
+
+  List<Plant> get plants => _plants;
+
+  void addPlant(Plant plant) {
+    _plants.add(plant);
+    notifyListeners();
+  }
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => PlantCareNotifier(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Plant Care Reminder',
+        theme: ThemeData(
+          scaffoldBackgroundColor: Colors.white,
+          appBarTheme: AppBarTheme(
+            color: Colors.green,
+          ),
+          floatingActionButtonTheme: FloatingActionButtonThemeData(
+            backgroundColor: Colors.green,
+          ),
+          textButtonTheme: TextButtonThemeData(
+            style: ButtonStyle(
+              foregroundColor: WidgetStateProperty.all<Color>(Colors.green),
+            ),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ButtonStyle(
+              backgroundColor: WidgetStateProperty.all<Color>(Colors.green),
+            ),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            border: OutlineInputBorder(),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.green),
+            ),
+          ),
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: PlantCareHomePage(),
+      ),
+    );
+  }
+}
+
+class PlantCareHomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Plant Care Reminder'),
+      ),
+      body: PlantList(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AddPlantPage()),
+          );
+        },
+        child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class PlantList extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<PlantCareNotifier>(
+      builder: (context, plantCareNotifier, _) => ListView.builder(
+        itemCount: plantCareNotifier.plants.length,
+        itemBuilder: (context, index) {
+          final plant = plantCareNotifier.plants[index];
+          return ListTile(
+            title: Text(plant.name),
+            subtitle: Text(plant.species),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PlantDetailPage(plant: plant),
+                ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+}
+
+class AddPlantPage extends StatelessWidget {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _speciesController = TextEditingController();
+  final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _careInstructionsController =
+      TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add Plant'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              controller: _nameController,
+              decoration: InputDecoration(
+                labelText: 'Name',
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.green),
+                ),
+              ),
+            ),
+            SizedBox(height: 8.0),
+            TextField(
+              controller: _speciesController,
+              decoration: InputDecoration(
+                labelText: 'Species',
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.green),
+                ),
+              ),
+            ),
+            SizedBox(height: 8.0),
+            TextField(
+              controller: _locationController,
+              decoration: InputDecoration(
+                labelText: 'Location',
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.green),
+                ),
+              ),
+            ),
+            SizedBox(height: 8.0),
+            TextField(
+              controller: _careInstructionsController,
+              decoration: InputDecoration(
+                labelText: 'Care Instructions',
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.green),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                final plant = Plant(
+                  name: _nameController.text,
+                  species: _speciesController.text,
+                  location: _locationController.text,
+                  careInstructions: _careInstructionsController.text,
+                );
+                Provider.of<PlantCareNotifier>(context, listen: false)
+                    .addPlant(plant);
+                Navigator.pop(context);
+              },
+              child: Text('Add Plant'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PlantDetailPage extends StatelessWidget {
+  final Plant plant;
+
+  PlantDetailPage({required this.plant});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(plant.name),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Species: ${plant.species}'),
+            Text('Location: ${plant.location}'),
+            Text('Care Instructions: ${plant.careInstructions}'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
