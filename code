@@ -41,6 +41,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Plant Care Reminder',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.white,
           appBarTheme: AppBarTheme(
