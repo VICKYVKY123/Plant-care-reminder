@@ -43,6 +43,7 @@ class MyApp extends StatelessWidget {
         title: 'Plant Care Reminder',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          primaryColor: Colors.green,
           scaffoldBackgroundColor: Colors.white,
           appBarTheme: AppBarTheme(
             color: Colors.green,
@@ -50,23 +51,6 @@ class MyApp extends StatelessWidget {
           floatingActionButtonTheme: FloatingActionButtonThemeData(
             backgroundColor: Colors.green,
           ),
-          textButtonTheme: TextButtonThemeData(
-            style: ButtonStyle(
-              foregroundColor: WidgetStateProperty.all<Color>(Colors.green),
-            ),
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all<Color>(Colors.green),
-            ),
-          ),
-          inputDecorationTheme: InputDecorationTheme(
-            border: OutlineInputBorder(),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.green),
-            ),
-          ),
-          visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         home: PlantCareHomePage(),
       ),
@@ -80,6 +64,14 @@ class PlantCareHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Plant Care Reminder'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              // Implement your search functionality here
+            },
+          ),
+        ],
       ),
       body: PlantList(),
       floatingActionButton: FloatingActionButton(
@@ -103,17 +95,44 @@ class PlantList extends StatelessWidget {
         itemCount: plantCareNotifier.plants.length,
         itemBuilder: (context, index) {
           final plant = plantCareNotifier.plants[index];
-          return ListTile(
-            title: Text(plant.name),
-            subtitle: Text(plant.species),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PlantDetailPage(plant: plant),
+          return Card(
+            elevation: 2.0,
+            margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+            child: ListTile(
+              title: Text(
+                plant.name,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
                 ),
-              );
-            },
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 4.0),
+                  Text(
+                    'Species: ${plant.species}',
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                  SizedBox(height: 4.0),
+                  Text(
+                    'Location: ${plant.location}',
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PlantDetailPage(plant: plant),
+                  ),
+                );
+              },
+            ),
           );
         },
       ),
@@ -139,43 +158,31 @@ class AddPlantPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
+            TextFormField(
               controller: _nameController,
               decoration: InputDecoration(
                 labelText: 'Name',
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green),
-                ),
               ),
             ),
             SizedBox(height: 8.0),
-            TextField(
+            TextFormField(
               controller: _speciesController,
               decoration: InputDecoration(
                 labelText: 'Species',
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green),
-                ),
               ),
             ),
             SizedBox(height: 8.0),
-            TextField(
+            TextFormField(
               controller: _locationController,
               decoration: InputDecoration(
                 labelText: 'Location',
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green),
-                ),
               ),
             ),
             SizedBox(height: 8.0),
-            TextField(
+            TextFormField(
               controller: _careInstructionsController,
               decoration: InputDecoration(
                 labelText: 'Care Instructions',
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green),
-                ),
               ),
             ),
             SizedBox(height: 16.0),
@@ -192,9 +199,6 @@ class AddPlantPage extends StatelessWidget {
                 Navigator.pop(context);
               },
               child: Text('Add Plant'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-              ),
             ),
           ],
         ),
@@ -219,13 +223,29 @@ class PlantDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Species: ${plant.species}'),
-            Text('Location: ${plant.location}'),
-            Text('Care Instructions: ${plant.careInstructions}'),
+            Text(
+              'Species: ${plant.species}',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 8.0),
+            Text(
+              'Location: ${plant.location}',
+              style: TextStyle(
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            SizedBox(height: 8.0),
+            Text(
+              'Care Instructions: ${plant.careInstructions}',
+              style: TextStyle(
+                fontStyle: FontStyle.italic,
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 }
-
